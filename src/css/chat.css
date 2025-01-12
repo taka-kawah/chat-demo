@@ -1,0 +1,80 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #dff0d8;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  height: 100vh; /* 画面全体の高さにする */
+  box-sizing: border-box; /* パディングとボーダーを含める */
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column; /* メッセージを縦に並べる */
+  gap: 10px; /* メッセージ間のスペース */
+  max-width: 90%; /* 親コンテナの最大幅を指定（画面の90%） */
+}
+
+.message-left {
+  background-color: #d9edf7;
+  align-self: flex-start; /* 吹き出しを左寄せ */
+  text-align: left; /* 吹き出し内のテキストを左寄せ */
+  padding: 10px;
+  border-radius: 10px;
+  margin: 5px 0;
+  max-width: 100%; /* 吹き出しが親コンテナの幅に合わせて広がる */
+  word-wrap: break-word; /* 長い単語が吹き出しを超えないように改行 */
+}
+
+.message-left {
+  background-color: #d9edf7;
+  align-self: flex-start; /* 吹き出しを左寄せ */
+  text-align: left; /* 吹き出し内のテキストを左寄せ */
+  padding: 10px;
+  border-radius: 10px;
+  margin: 5px 0;
+  max-width: 100%; /* 最大幅を設定せず、メッセージに合わせて吹き出しが広がる */
+  word-wrap: break-word; /* 長い単語が吹き出しを超えないように改行する */
+  white-space: pre-wrap; /* 複数行のテキストを表示できるようにする */
+}
+
+.message-right {
+  background-color: #fce5cd;
+  align-self: flex-end;
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.chat-input button {
+  padding: 10px 15px;
+  background-color: #5cb85c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background-color: #4cae4c;
+}
