@@ -1,9 +1,30 @@
-import React, { useState } from 'react'
-import '../css/chat.css'
+import React, { useEffect, useState } from 'react'
+import { addChat, getChatsByGroupId } from '../library/connectToDb'
+import Chat from '../models/chat'
+import { UseAuth } from '../library/AuthContext'
+import {useParams} from 'react-router-dom'
 
 const ChatScreen = () => {
+  const {uUser: user} = UseAuth()
+  //urlパラメータからとる方針に変更
+  const {groupId} = useParams<{groupId: string}>()
+
   const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState<string[]>([])
+  const [chats , setChats] = useState<Chat[]>([])
+
+  useEffect(() => {
+    const unsubscribe = getChatsByGroupId(groupId, (updateChats) => {
+      setChats(updateChats)
+    })
+    return () => unsubscribe()
+  })
+
+  if(!user){
+    return(
+      //エラー画面なんとかしたい
+      <div className="chat-container">エラーです</div>
+    )
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value)
@@ -12,7 +33,7 @@ const ChatScreen = () => {
   const handleSend = () => {
     if(message !== ''){
       console.log('message', message)
-      setMessages([...messages,message])
+      addChat(message, groupId, user.uid)
       setMessage('')
     }
   }
@@ -26,8 +47,8 @@ const ChatScreen = () => {
     return(
       <div className="chat-container">
         <div className="chat-messages">
-          {messages.map((msg) =>(
-            <Message message={msg}/>
+          {chats.map((chat) =>(
+            <Message chat={chat}/>
           ))}
         </div>
         <div className="chat-input">
@@ -44,9 +65,9 @@ const ChatScreen = () => {
     )
 }
 
-const Message = ({message}: {message: string}) => {
+const Message = ({chat}: {chat: Chat}) => {
   return(
-    <div className='message message-left'>{message}</div>
+    <div className='message message-left'>{chat.Message}</div>
   )
 }
 

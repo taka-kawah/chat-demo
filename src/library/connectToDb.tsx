@@ -1,15 +1,16 @@
-import { setDoc, doc, collection, query, where, getDocs } from "firebase/firestore";
+import { setDoc, doc, collection, query, where, onSnapshot } from "firebase/firestore";
 import{ db } from './connectToFirebase'
 import Chat from "../models/chat";
 import generateUniqueId from "./generateUniqueId";
 import Group from "../models/group";
 
-export async function addChat(chat:Chat){
+export async function addChat(message: string, groupId: string|undefined, postedBy: string){
+    //groupIdがundefinedの場合エラー
     await setDoc(doc(db, 'chat', generateUniqueId()), {
-        CreatedAt: chat.CreatedAt,
-        Message: chat.Message,
-        GroupId: chat.GroupId,
-        PostedBy: chat.PostedBy
+        CreatedAt: new Date(),
+        Message: message,
+        GroupId: groupId,
+        PostedBy: postedBy
     })
 }
 
@@ -20,10 +21,19 @@ export async function addGroup(group:Group){
     })
 }
 
-export async function showChatsByGroupId(groupId:string) {
-    const colRef = collection(db, 'chat')
-    const q = query(colRef, where('GroupId', '==', groupId))
-    const querySnapshot = await getDocs(q)
-    const result = querySnapshot.docs.map(doc => new Chat(doc.id, doc.data()))
-    return result
+export function getChatsByGroupId(groupId:string|undefined, onUpdate: (chats: Chat[]) => void) {
+    //groupIdがundefinedの場合エラー    
+    const collectionRef = collection(db, 'chat')
+    const q = query(collectionRef, where('GroupId', '==', groupId))
+
+    const unsubscribe = onSnapshot(q, (snapShot) => {
+        const chatsArr: Chat[] = []
+        snapShot.forEach(doc => {
+            const chat = new Chat(doc.id, doc.data)
+            chatsArr.push(chat)
+        })
+        onUpdate(chatsArr)
+    })
+
+    return unsubscribe
 }
