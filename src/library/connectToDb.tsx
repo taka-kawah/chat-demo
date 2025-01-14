@@ -21,14 +21,30 @@ export async function addGroup(group:Group){
     })
 }
 
+export function getGroupsByUid(uid:string, onUpdate: (groups: Group[]) => void) {
+    const collectionRef = collection(db, 'group')
+    const q = query(collectionRef, where('member', 'array-contains', uid))
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const groupArr: Group[] = []
+        snapshot.forEach(doc => {
+            const group = new Group(doc.id, doc.data)
+            groupArr.push(group)
+        })
+        onUpdate(groupArr)
+    })
+
+    return unsubscribe
+}
+
 export function getChatsByGroupId(groupId:string|undefined, onUpdate: (chats: Chat[]) => void) {
     //groupIdがundefinedの場合エラー    
     const collectionRef = collection(db, 'chat')
     const q = query(collectionRef, where('GroupId', '==', groupId))
 
-    const unsubscribe = onSnapshot(q, (snapShot) => {
+    const unsubscribe = onSnapshot(q, (snapshot) => {
         const chatsArr: Chat[] = []
-        snapShot.forEach(doc => {
+        snapshot.forEach(doc => {
             const chat = new Chat(doc.id, doc.data)
             chatsArr.push(chat)
         })

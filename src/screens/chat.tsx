@@ -17,7 +17,7 @@ const ChatScreen = () => {
       setChats(updateChats)
     })
     return () => unsubscribe()
-  })
+  }, [groupId])
 
   if(!user){
     return(

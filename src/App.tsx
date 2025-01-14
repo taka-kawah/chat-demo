@@ -4,12 +4,18 @@ import '../css/login.css'
 import { createUser, login } from './library/loginCredential'
 import { AuthProvider } from './library/AuthContext'
 import ChatScreen from './screens/chat'
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
+import { GroupScreen } from './screens/group'
+
+//名前欄を追加したい
 
 function App() {
   const [newAddress, setNewAddress] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [loginAddress, setLoginAddress] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
+
+  const navigator = useNavigate()
 
   const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewAddress(e.target.value)
@@ -27,14 +33,26 @@ function App() {
   const createNewAccount = () => {
     //入力チェックいれて、ダメならメッセージを出す
     createUser(newAddress, newPassword)
-    //入れたらグループ一覧画面へリダイレクト
-    //失敗したらメッセージを出す
+      .then(() => {
+        //入れたらグループ一覧画面へリダイレクト
+        navigator('/group')
+      })
+      .catch(() => {
+        //失敗したらメッセージを出す
+        console.log('エラー発生')
+      })
   }
 
   const loginToMyAccount = () => {
     login(loginAddress, loginPassword)
-    //入れたらグループ一覧画面へリダイレクト
-    //失敗したらメッセージを出す
+      .then(() => {
+        //入れたらグループ一覧画面へリダイレクト
+        navigator('/group')
+      })
+      .catch(() => {
+        //失敗したらメッセージを出す
+        console.log('エラー発生')
+      })
   }
 
   return (
@@ -101,8 +119,13 @@ function App() {
       </div>
 
       <AuthProvider>
-        <ChatScreen />
-      </AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path = '/group' element = {<GroupScreen />} />
+            <Route path = '/chat/:groupId' element = {<ChatScreen />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>      
     </div>
   );
 }
