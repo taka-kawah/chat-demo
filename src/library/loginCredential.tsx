@@ -2,7 +2,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } f
 import { auth } from './connectToFirebase'
 import { UseAuth } from './AuthContext'
 
-export function createUser(email:string, password:string): Promise<void>{
+export function createUser(email:string, password:string): Promise<string>{
     //名前と一緒にdbのユーザーコレクションに自分の情報を追加したい
     return new Promise((resolve, reject) => {
         const {SetUser} = UseAuth()
@@ -11,7 +11,7 @@ export function createUser(email:string, password:string): Promise<void>{
             .then((userCredential) => {
                 const user = userCredential.user
                 SetUser(user)
-                resolve()
+                resolve(user.uid)
             }).catch((error) =>{
                 console.error(error.code)
                 console.error(error.message)

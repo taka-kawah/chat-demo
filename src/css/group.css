@@ -2,69 +2,112 @@
     display: flex;
     height: 100vh;
     font-family: Arial, sans-serif;
-  }
+}
   
   /* 左のサイドバー */
-  .sidebar {
-    width: 20%;
-    background-color: #f5f5f5;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.sidebar {
+  width: 20%;
+  background-color: #f5f5f5;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
   
-  .create-group-button {
-    background-color: #5cb85c;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+.create-group-button {
+  background-color: #5cb85c;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
   
-  .create-group-button:hover {
-    background-color: #4cae4c;
-  }
+.create-group-button:hover {
+  background-color: #4cae4c;
+}
   
-  /* チャット一覧 */
-  .chat-list {
-    flex: 1;
-    padding: 20px;
-    background-color: #ffffff;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-  }
+/* チャット一覧 */
+.chat-list {
+  flex: 1;
+  padding: 20px;
+  background-color: #ffffff;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
   
-  .chat-list h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
+.chat-list h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
   
-  .chat-item {
-    background-color: #dff0d8;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    cursor: pointer;
-  }
+.chat-item {
+  background-color: #dff0d8;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
   
-  .chat-item:hover {
-    background-color: #c8e5c3;
-  }
+.chat-item:hover {
+  background-color: #c8e5c3;
+}
   
   /* 右のログイン情報 */
-  .login-info {
-    width: 20%;
-    background-color: #f5f5f5;
-    padding: 10px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    color: #333;
-    border-left: 1px solid #ccc;
-  }
+.login-info {
+  width: 20%;
+  background-color: #f5f5f5;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #333;
+  border-left: 1px solid #ccc;
+}
   
+/* フォーム全体のスタイル */
+.form-container {
+  background-color: #e0f7dc;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  margin: 0 auto;
+}
+
+/* 各行のスタイル */
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* チェックボックスのスタイル */
+.checkbox {
+  margin-right: 10px;
+}
+
+/* テキスト入力フィールドのスタイル */
+.text-input {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/* ボタンのスタイル */
+.create-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.create-button:hover {
+  background-color: #45a049;
+}

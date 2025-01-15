@@ -6,6 +6,7 @@ import { AuthProvider } from './library/AuthContext'
 import ChatScreen from './screens/chat'
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
 import { GroupScreen } from './screens/group'
+import { addNewUser } from './library/connectToDb'
 
 //名前欄を追加したい
 
@@ -33,8 +34,9 @@ function App() {
   const createNewAccount = () => {
     //入力チェックいれて、ダメならメッセージを出す
     createUser(newAddress, newPassword)
-      .then(() => {
-        //入れたらグループ一覧画面へリダイレクト
+      .then((uid) => {
+        //作れたら名前を入力させてdbに登録
+        addNewUser(uid, 'userName')
         navigator('/group')
       })
       .catch(() => {

@@ -1,8 +1,9 @@
-import { setDoc, doc, collection, query, where, onSnapshot } from "firebase/firestore";
+import { setDoc, doc, collection, query, where, onSnapshot, getDocs } from "firebase/firestore";
 import{ db } from './connectToFirebase'
 import Chat from "../models/chat";
 import generateUniqueId from "./generateUniqueId";
 import Group from "../models/group";
+import { User } from "../models/user";
 
 export async function addChat(message: string, groupId: string|undefined, postedBy: string){
     //groupIdがundefinedの場合エラー
@@ -14,11 +15,14 @@ export async function addChat(message: string, groupId: string|undefined, posted
     })
 }
 
-export async function addGroup(group:Group){
-    await setDoc(doc(db, 'group', generateUniqueId()), {
-        CreatedAt: group.CreatedAt,
-        member: group.Member
+export async function addGroup(name: string, member:string[]){
+    const newId = generateUniqueId()
+    await setDoc(doc(db, 'group', newId), {
+        name: name,
+        createdAt: new Date(),
+        member: member
     })
+    return newId
 }
 
 export function getGroupsByUid(uid:string, onUpdate: (groups: Group[]) => void) {
@@ -52,4 +56,21 @@ export function getChatsByGroupId(groupId:string|undefined, onUpdate: (chats: Ch
     })
 
     return unsubscribe
+}
+
+export async function addNewUser(uid: string, userName: string){
+    await setDoc(doc(db, 'user', generateUniqueId()), {
+        id: uid,
+        name: userName
+    })
+}
+
+export async function getAllUsers(){
+    let usersArr: User[] = []
+    const collectionRef = collection(db, 'user')
+    const snapshot = await getDocs(collectionRef)
+    snapshot.forEach((doc) => {
+        usersArr.push(new User(doc.id, doc.data))
+    })
+    return usersArr
 }
