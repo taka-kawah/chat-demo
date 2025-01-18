@@ -1,5 +1,5 @@
 import React, { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
-import { auth } from './connectToFirebase'
+import auth from "../getFirebaseConfig/getAuth";
 import { onAuthStateChanged, User } from "firebase/auth";
 
 //これが正解？

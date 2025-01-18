@@ -1,5 +1,5 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { auth } from './connectToFirebase'
+import auth from '../getFirebaseConfig/getAuth'
 import { UseAuth } from './AuthContext'
 
 export function createUser(email:string, password:string): Promise<string>{

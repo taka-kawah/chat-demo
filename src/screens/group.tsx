@@ -3,7 +3,7 @@ import '../css/group.css'
 import { UseAuth } from '../library/AuthContext'
 import Group from '../models/group'
 import { addGroup, getAllUsers, getGroupsByUid } from "../library/connectToDb";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { User } from "../models/user";
 
 interface AssignedUser{
@@ -56,7 +56,7 @@ const CreatingGroupModal = ({isCreating}:{isCreating: boolean}) => {
     const assignedUsers: AssignedUser[] = []
     getAllUsers()
         .then((users) =>{
-            users.map((user) =>{
+            users.forEach((user) =>{
                 assignedUsers.push({Checked: false, User: user})
             })
         })
@@ -103,7 +103,6 @@ export const GroupScreen = () => {
         }
     }, [user])
 
-    const navigate = useNavigate()
     return (
         <div className="container">
             <div className="sidebar">

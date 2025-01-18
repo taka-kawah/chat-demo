@@ -1,5 +1,5 @@
 import { setDoc, doc, collection, query, where, onSnapshot, getDocs } from "firebase/firestore";
-import{ db } from './connectToFirebase'
+import db from '../getFirebaseConfig/getDb'
 import Chat from "../models/chat";
 import generateUniqueId from "./generateUniqueId";
 import Group from "../models/group";
