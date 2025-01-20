@@ -1,15 +1,27 @@
-import {initializeApp} from "firebase/app";
+import {initializeApp, getApps, getApp} from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBElptVFXyDKDvuxEdMJjbqpd4E7TA-z7k",
-    authDomain: "chat-demo-47f22.firebaseapp.com",
-    projectId: "chat-demo-47f22",
-    storageBucket: "chat-demo-47f22.firebasestorage.app",
-    messagingSenderId: "722796065113",
-    appId: "1:722796065113:web:3bdb8e02d389e72f631c48",
-    measurementId: "G-LK1D9FVRHH"
-};
+export class FirebaseInitializer{
+    private app: any
+    private readonly firebaseConfig = {
+        apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+        authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.REACT_APP_FIREBASE_APP_ID,
+        measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
+    }
 
-const app = initializeApp(firebaseConfig)
+    constructor(){
+        if(!getApps().length){
+            this.app = initializeApp(this.firebaseConfig)
+        }else{
+            this.app = getApp()
+        }
+    }
 
-export default app
+    public getDb = () => getFirestore(this.app)
+    public getCurrentAuth = () => getAuth(this.app)
+}

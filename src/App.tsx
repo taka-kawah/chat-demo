@@ -11,15 +11,20 @@ import { LoginScreen } from './screens/login'
 function App() {
   return(
     <div>
-      <BrowserRouter>
-        <AuthProvider>
+      {/* <BrowserRouter>
+        <Routes>
+          <Route path = '/' element = {<LoginScreen />} />
+        </Routes>
+      </BrowserRouter> */}
+      <AuthProvider>
+        <BrowserRouter>
           <Routes>
             <Route path = '/' element = {<LoginScreen />} />
             <Route path = '/group' element = {<GroupScreen />} />
             <Route path = '/chat/:groupId' element = {<ChatScreen />} />
           </Routes>
-        </AuthProvider>      
-      </BrowserRouter>
+        </BrowserRouter>
+      </AuthProvider>      
     </div>
   );
 }

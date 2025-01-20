@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import {useParams} from 'react-router-dom'
 import { addChat, getChatsByGroupId } from '../library/connectToDb'
 import Chat from '../models/chat'
-import { UseAuth } from '../library/AuthContext'
-import {useParams} from 'react-router-dom'
+import { AuthContext } from '../library/AuthContext'
 
 const ChatScreen = () => {
-  const {uUser: user} = UseAuth()
-  //urlパラメータからとる方針に変更
+  const user = useContext(AuthContext)
   const {groupId} = useParams<{groupId: string}>()
 
   const [message, setMessage] = useState('')

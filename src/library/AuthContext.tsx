@@ -1,36 +1,44 @@
-import React, { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
-import auth from "../getFirebaseConfig/getAuth";
+import React, { createContext, ReactNode, useEffect } from "react";
+import { FirebaseInitializer } from "../getFirebaseConfig/getApp";
 import { onAuthStateChanged, User } from "firebase/auth";
 
-//これが正解？
-interface AuthContextType{
-    uUser: User|null
-    SetUser: Dispatch<SetStateAction<User|null>>
-}
+const defaultUser: User = {
+    emailVerified: false,
+    isAnonymous: false,
+    metadata: {
+        creationTime: new Date().toString(),
+        lastSignInTime: new Date().toString()
+    },
+    providerData: [],
+    refreshToken: '',
+    tenantId: null
+} as unknown as User
 
-const AuthContext = createContext<AuthContextType>({uUser: null, SetUser: () => {}})
+//contextにuserのデフォルト値を設定
+export const AuthContext = createContext<User>(defaultUser)
 
-export const UseAuth = () => {
-    return useContext(AuthContext)
-}
-
+//Appがレンダリング
 export const AuthProvider: React.FC<{children: ReactNode}> = ({children}) => {
-    const [user, setUser] = useState<User|null>(null)
+    const firebaseInitializer = new FirebaseInitializer()
+    const auth = firebaseInitializer.getCurrentAuth()
+
+    let user: User = defaultUser
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (userCredential) => {
-            if(userCredential){
-                setUser(userCredential)
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            if(currentUser){
+                user = currentUser
             }else{
-                setUser(null)
+                console.error('エラー：未ログインです')
             }
         })
 
         return unsubscribe
     }, [])
 
+    //現在ログイン中のuserが渡される(未ログインの場合はデフォルト値)
     return(
-        <AuthContext.Provider value={{uUser:user, SetUser:setUser}}>
+        <AuthContext.Provider value={user}>
             {children}
         </AuthContext.Provider>
     )

@@ -29,52 +29,55 @@ export const LoginScreen = () => {
 
     const CreateNewAccountButton = () => {
         const navigator = useNavigate()
+        
+        const handleCreateButton = (event: React.FormEvent) => {
+            event.preventDefault()
+            createUser(newAddress, newPassword)
+            .then((newId) => {
+                //作れたら名前ともにuser登録→リダイレクト
+                addNewUser(newId, 'username')
+                navigator('/group')
+            })
+            .catch((e) => {
+                //失敗したらメッセージを出す
+                console.log('エラー発生: ' + e.message)
+            }
+        )   
+        }
         //入力チェックいれて、ダメならメッセージを出す
         return(
             <button
                 type="submit"
                 className="form-button"
-                onClick={() => {
-                    createUser(newAddress, newPassword)
-                    .then((uid) => {
-                        //作れたら名前を入力させてdbに登録
-                        addNewUser(uid, 'userName')
-                        navigator('/group')
-                    })
-                    .catch((e) => {
-                        //失敗したらメッセージを出す
-                        console.log('エラー発生')
-                        return(
-                            <div>
-                                e.message
-                            </div>
-                        )
-                    })
-                }}
+                onClick={handleCreateButton}
             >アカウント登録</button>
         )        
     }
 
     const LoginToMyAccountButton = () => {
         const navigator = useNavigate()
+
+        const handleLoginButton = (event: React.FormEvent) => {
+            event.preventDefault()
+            login(loginAddress, loginPassword)
+                .then(() => {
+                    //入れたらcontextを設定→リダイレクト
+                    navigator('/group')
+                })
+                .catch(() => {
+                    //失敗したらメッセージを出す
+                    console.log('エラー発生')
+                    })
+            }            
+        
         return(
             <button
                 type="submit"
                 className="form-button"
-                onClick={() => {        
-                login(loginAddress, loginPassword)
-            .then(() => {
-            //入れたらグループ一覧画面へリダイレクト
-            navigator('/group')
-            })
-            .catch(() => {
-                //失敗したらメッセージを出す
-                console.log('エラー発生')
-                })
-            }}
+                onClick={handleLoginButton}
             >ログイン</button>
         )
-    }
+}
 
     return (
         <div className="App">

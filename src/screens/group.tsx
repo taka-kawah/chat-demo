@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import '../css/group.css'
-import { UseAuth } from '../library/AuthContext'
 import Group from '../models/group'
 import { addGroup, getAllUsers, getGroupsByUid } from "../library/connectToDb";
 import { useNavigate } from "react-router-dom";
 import { User } from "../models/user";
+import { AuthContext } from "../library/AuthContext";
 
 interface AssignedUser{
     Checked: boolean
@@ -90,7 +90,7 @@ const CreatingGroupModal = ({isCreating}:{isCreating: boolean}) => {
 }
 
 export const GroupScreen = () => {
-    const {uUser: user} = UseAuth()
+    const user = useContext(AuthContext)
     const [groups, setGroups] = useState<Group[]>([])
     const [isCreatingNewGroup, setIsCreatingNewGroup] = useState<boolean>(false)
     //レンダリング時とgroupコレクション更新時にuseEffectを発火させる

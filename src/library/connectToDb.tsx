@@ -1,11 +1,13 @@
 import { setDoc, doc, collection, query, where, onSnapshot, getDocs } from "firebase/firestore";
-import db from '../getFirebaseConfig/getDb'
+import { FirebaseInitializer } from "../getFirebaseConfig/getApp";
 import Chat from "../models/chat";
 import generateUniqueId from "./generateUniqueId";
 import Group from "../models/group";
 import { User } from "../models/user";
 
 export async function addChat(message: string, groupId: string|undefined, postedBy: string){
+    const firebaseInitializer = new FirebaseInitializer()
+    const db = firebaseInitializer.getDb()
     //groupIdがundefinedの場合エラー
     await setDoc(doc(db, 'chat', generateUniqueId()), {
         CreatedAt: new Date(),
@@ -16,6 +18,9 @@ export async function addChat(message: string, groupId: string|undefined, posted
 }
 
 export async function addGroup(name: string, member:string[]){
+    const firebaseInitializer = new FirebaseInitializer()
+    const db = firebaseInitializer.getDb()
+
     const newId = generateUniqueId()
     await setDoc(doc(db, 'group', newId), {
         name: name,
@@ -26,6 +31,9 @@ export async function addGroup(name: string, member:string[]){
 }
 
 export function getGroupsByUid(uid:string, onUpdate: (groups: Group[]) => void) {
+    const firebaseInitializer = new FirebaseInitializer()
+    const db = firebaseInitializer.getDb()
+
     const collectionRef = collection(db, 'group')
     const q = query(collectionRef, where('member', 'array-contains', uid))
 
@@ -42,6 +50,9 @@ export function getGroupsByUid(uid:string, onUpdate: (groups: Group[]) => void) 
 }
 
 export function getChatsByGroupId(groupId:string|undefined, onUpdate: (chats: Chat[]) => void) {
+    const firebaseInitializer = new FirebaseInitializer()
+    const db = firebaseInitializer.getDb()
+    
     //groupIdがundefinedの場合エラー    
     const collectionRef = collection(db, 'chat')
     const q = query(collectionRef, where('GroupId', '==', groupId))
@@ -59,6 +70,9 @@ export function getChatsByGroupId(groupId:string|undefined, onUpdate: (chats: Ch
 }
 
 export async function addNewUser(uid: string, userName: string){
+    const firebaseInitializer = new FirebaseInitializer()
+    const db = firebaseInitializer.getDb()
+    
     await setDoc(doc(db, 'user', generateUniqueId()), {
         id: uid,
         name: userName
@@ -66,6 +80,9 @@ export async function addNewUser(uid: string, userName: string){
 }
 
 export async function getAllUsers(){
+    const firebaseInitializer = new FirebaseInitializer()
+    const db = firebaseInitializer.getDb()
+    
     let usersArr: User[] = []
     const collectionRef = collection(db, 'user')
     const snapshot = await getDocs(collectionRef)

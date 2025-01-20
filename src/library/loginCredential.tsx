@@ -1,17 +1,23 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import auth from '../getFirebaseConfig/getAuth'
-import { UseAuth } from './AuthContext'
+import { FirebaseInitializer } from "../getFirebaseConfig/getApp";
 
 export function createUser(email:string, password:string): Promise<string>{
-    //名前と一緒にdbのユーザーコレクションに自分の情報を追加したい
+    //Authenticationを登録しログイン
+    const firebaseInitializer = new FirebaseInitializer()
+    const auth = firebaseInitializer.getCurrentAuth()
+    if(auth){
+        if(auth.emulatorConfig){
+            console.log('認証エミュレータ不使用')
+        }
+    }else{
+        //ここにきます
+        console.error('Firebase未認証')
+    }
     return new Promise((resolve, reject) => {
-        const {SetUser} = UseAuth()
-
         createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user
-                SetUser(user)
-                resolve(user.uid)
+            .then((newUser) => {
+                login(email, password)
+                resolve(newUser.user.uid)
             }).catch((error) =>{
                 console.error(error.code)
                 console.error(error.message)
@@ -21,13 +27,13 @@ export function createUser(email:string, password:string): Promise<string>{
 }
 
 export function login(email:string, password:string): Promise<void>{
+    const firebaseInitializer = new FirebaseInitializer()
+    const auth = firebaseInitializer.getCurrentAuth()
+    //ログインするだけ
     return new Promise((resolve, reject) => {
-        const {SetUser} = UseAuth()
 
         signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user
-                SetUser(user)
+            .then(() => {
                 resolve()
             }).catch((error) => {
                 console.error(error.code)
@@ -38,8 +44,9 @@ export function login(email:string, password:string): Promise<void>{
 }
 
 export async function logout(){
+    const firebaseInitializer = new FirebaseInitializer()
+    const auth = firebaseInitializer.getCurrentAuth()
     await signOut(auth)
-        .then()
         .catch((error) => {
             console.error(error.code)
             console.error(error.message)
