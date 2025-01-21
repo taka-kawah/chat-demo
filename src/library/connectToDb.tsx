@@ -1,13 +1,13 @@
 import { setDoc, doc, collection, query, where, onSnapshot, getDocs } from "firebase/firestore";
-import { FirebaseInitializer } from "../getFirebaseConfig/getApp";
+import { fb } from "../getFirebaseConfig/getApp";
 import Chat from "../models/chat";
 import generateUniqueId from "./generateUniqueId";
 import Group from "../models/group";
 import { User } from "../models/user";
+import { Unsubscribe } from "firebase/auth";
 
 export async function addChat(message: string, groupId: string|undefined, postedBy: string){
-    const firebaseInitializer = new FirebaseInitializer()
-    const db = firebaseInitializer.getDb()
+    const db = fb.getDb()
     //groupIdがundefinedの場合エラー
     await setDoc(doc(db, 'chat', generateUniqueId()), {
         CreatedAt: new Date(),
@@ -18,8 +18,7 @@ export async function addChat(message: string, groupId: string|undefined, posted
 }
 
 export async function addGroup(name: string, member:string[]){
-    const firebaseInitializer = new FirebaseInitializer()
-    const db = firebaseInitializer.getDb()
+    const db = fb.getDb()
 
     const newId = generateUniqueId()
     await setDoc(doc(db, 'group', newId), {
@@ -31,27 +30,45 @@ export async function addGroup(name: string, member:string[]){
 }
 
 export function getGroupsByUid(uid:string, onUpdate: (groups: Group[]) => void) {
-    const firebaseInitializer = new FirebaseInitializer()
-    const db = firebaseInitializer.getDb()
-
+    const db = fb.getDb()
+    let myId: string = ''
+    
+    //まず現ユーザのid(uidとは別)を取得
+    const getId = (): Promise<string> => {
+        const userRef = collection(db, 'user')
+        const userQuery = query(userRef, where('id', '==', uid))
+        return new Promise((resolve, reject) => {
+            getDocs(userQuery).then((ds) => {
+                if(ds.docs.length !== 1){
+                    return reject('uidが重複したユーザがuserドキュメントに登録されている！？');
+                }
+                return resolve(ds.docs[0].id)
+            }).catch((e) => {
+                console.error(e)
+                return reject(e)
+            })
+        })
+    }
+    //ここの非同期処理の結果を同期させたい
+    getId().then((id) => {
+        myId = id
+    })
     const collectionRef = collection(db, 'group')
-    const q = query(collectionRef, where('member', 'array-contains', uid))
+    const q = query(collectionRef, where('member', 'array-contains', myId))
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubscribe: Unsubscribe = onSnapshot(q, (snapshot) => {
         const groupArr: Group[] = []
         snapshot.forEach(doc => {
             const group = new Group(doc.id, doc.data)
             groupArr.push(group)
         })
         onUpdate(groupArr)
+        return unsubscribe
     })
-
-    return unsubscribe
 }
 
 export function getChatsByGroupId(groupId:string|undefined, onUpdate: (chats: Chat[]) => void) {
-    const firebaseInitializer = new FirebaseInitializer()
-    const db = firebaseInitializer.getDb()
+    const db = fb.getDb()
     
     //groupIdがundefinedの場合エラー    
     const collectionRef = collection(db, 'chat')
@@ -69,9 +86,18 @@ export function getChatsByGroupId(groupId:string|undefined, onUpdate: (chats: Ch
     return unsubscribe
 }
 
+export async function checkGroupExist(groupName:string){
+    const db = fb.getDb()
+    const collectionRef = collection(db, 'group')
+    const q = query(collectionRef, where('name', '==', groupName))
+
+    const snapshot = await getDocs(q)
+    return !snapshot.empty
+    
+}
+
 export async function addNewUser(uid: string, userName: string){
-    const firebaseInitializer = new FirebaseInitializer()
-    const db = firebaseInitializer.getDb()
+    const db = fb.getDb()
     
     await setDoc(doc(db, 'user', generateUniqueId()), {
         id: uid,
@@ -80,8 +106,7 @@ export async function addNewUser(uid: string, userName: string){
 }
 
 export async function getAllUsers(){
-    const firebaseInitializer = new FirebaseInitializer()
-    const db = firebaseInitializer.getDb()
+    const db = fb.getDb()
     
     let usersArr: User[] = []
     const collectionRef = collection(db, 'user')

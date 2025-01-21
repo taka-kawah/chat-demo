@@ -1,5 +1,5 @@
-import React, { createContext, ReactNode, useEffect } from "react";
-import { FirebaseInitializer } from "../getFirebaseConfig/getApp";
+import React, { createContext, ReactNode, useEffect, useState } from "react";
+import { fb } from "../getFirebaseConfig/getApp";
 import { onAuthStateChanged, User } from "firebase/auth";
 
 const defaultUser: User = {
@@ -19,22 +19,20 @@ export const AuthContext = createContext<User>(defaultUser)
 
 //Appがレンダリング
 export const AuthProvider: React.FC<{children: ReactNode}> = ({children}) => {
-    const firebaseInitializer = new FirebaseInitializer()
-    const auth = firebaseInitializer.getCurrentAuth()
-
-    let user: User = defaultUser
+    const auth = fb.getCurrentAuth()
+    const [user, setUser] = useState<User>(defaultUser)
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if(currentUser){
-                user = currentUser
+                setUser(currentUser)
             }else{
-                console.error('エラー：未ログインです')
+                console.log('未ログイン')
             }
         })
 
         return unsubscribe
-    }, [])
+    }, [auth])
 
     //現在ログイン中のuserが渡される(未ログインの場合はデフォルト値)
     return(

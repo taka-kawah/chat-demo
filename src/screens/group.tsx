@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import '../css/group.css'
 import Group from '../models/group'
-import { addGroup, getAllUsers, getGroupsByUid } from "../library/connectToDb";
+import { addGroup, checkGroupExist, getAllUsers, getGroupsByUid } from "../library/connectToDb";
 import { useNavigate } from "react-router-dom";
 import { User } from "../models/user";
 import { AuthContext } from "../library/AuthContext";
@@ -27,14 +27,26 @@ const Grouptab = ({group}: {group: Group}) => {
     )
 }
 
-const CreatingNewGroup = ({assignedUsers}: {assignedUsers: AssignedUser[]}) =>{
+const CreatingNewGroup = ({assignedUsers}: {assignedUsers: AssignedUser[]}) =>{    
     const navigate = useNavigate()
-    const redirectToChat = () => {
+    
+    const redirectToChat = async () => {
+        if(assignedUsers.length === 0){
+            console.log('ユーザーが選択されていません')
+            return
+        }
+
         const users = assignedUsers.map(assignedUsers => assignedUsers.User.Id)
-        addGroup(users.join(', '), users)
-        .then((groupName) => {
+        const newGroupName = users.join(', ')
+        if(await checkGroupExist(newGroupName)){
+            console.log('すでにこのグループは存在しています')
+            return
+        }
+
+        addGroup(newGroupName, users)
+        .then((newId) => {
             // eslint-disable-next-line no-template-curly-in-string
-            navigate('/chat/' + groupName)
+            navigate('/chat/' + newId)
         })
     }
 
@@ -48,24 +60,39 @@ const CreatingNewGroup = ({assignedUsers}: {assignedUsers: AssignedUser[]}) =>{
     )
 }
 
-const handleUserCheck = (assignedUser: AssignedUser, bool: boolean) => {
-    assignedUser.Checked = bool
-}
 
 const CreatingGroupModal = ({isCreating}:{isCreating: boolean}) => {
-    const assignedUsers: AssignedUser[] = []
-    getAllUsers()
-        .then((users) =>{
-            users.forEach((user) =>{
-                assignedUsers.push({Checked: false, User: user})
-            })
-        })
+    const [assignedUsers, setAssignedUsers] = useState<AssignedUser[]>([])
     
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try{
+                const users = await getAllUsers()
+                const currentAssignedUsers = users.map((user) => ({
+                    Checked: false,
+                    User: user
+                }))
+                setAssignedUsers(currentAssignedUsers)
+            }catch(e){
+                console.error('ユーザーの取得に失敗しました' + e)
+            }
+        }
+        fetchUsers()
+    }, [])
+    
+    const handleUserCheck = (assignedUser: AssignedUser, bool: boolean) => {
+        //useStateを確実に発火させるため、直接変更するのではなく変更された値をセットする
+        setAssignedUsers((prevAssignedUsers) => prevAssignedUsers.map((prevAssignedUser) =>
+                prevAssignedUser.User.Id === assignedUser.User.Id
+                ? {...prevAssignedUser, Checked: bool}
+                : prevAssignedUser
+            )
+        )
+    }
     return(
         <>
             {isCreating ? (
                 <div className="form-container">
-                    <button>×</button>
                     {assignedUsers.map((assignedUser, index) => (
                         <div key={index} className="form-row">
                             <input
@@ -99,9 +126,10 @@ export const GroupScreen = () => {
             const unsubscribe = getGroupsByUid(user.uid, (updateGroup) => {
                 setGroups(updateGroup)
             })
-            return () => unsubscribe()
+            return () => unsubscribe
         }
     }, [user])
+    console.log('レンダリングします！現ユーザー：' + user.uid)
 
     return (
         <div className="container">
@@ -112,7 +140,7 @@ export const GroupScreen = () => {
                         setIsCreatingNewGroup(!isCreatingNewGroup)
                     }}
                 >
-                    グループを新規作成
+                    {isCreatingNewGroup?'閉じる':'グループを新規作成'}
                 </button>
                 <CreatingGroupModal isCreating = {isCreatingNewGroup}/>
             </div>

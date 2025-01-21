@@ -2,7 +2,7 @@ import {initializeApp, getApps, getApp} from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-export class FirebaseInitializer{
+class FirebaseInitializer{
     private app: any
     private readonly firebaseConfig = {
         apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -25,3 +25,5 @@ export class FirebaseInitializer{
     public getDb = () => getFirestore(this.app)
     public getCurrentAuth = () => getAuth(this.app)
 }
+
+export const fb = new FirebaseInitializer()
