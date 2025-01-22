@@ -31,7 +31,6 @@ export async function addGroup(name: string, member:string[]){
 
 export function getGroupsByUid(uid:string, onUpdate: (groups: Group[]) => void) {
     const db = fb.getDb()
-    let myId: string = ''
     
     //まず現ユーザのid(uidとは別)を取得
     const getId = (): Promise<string> => {
@@ -51,23 +50,17 @@ export function getGroupsByUid(uid:string, onUpdate: (groups: Group[]) => void) 
     }
     //ここの非同期処理の結果を同期させたい
     getId().then((id) => {
-        myId = id
-    })
-
-    if(myId === ''){
-        console.log('同期できてないーよ😎')
-        myId = 'm653fg8s6067l5zh'
-    }
-    const collectionRef = collection(db, 'group')
-    const q = query(collectionRef, where('member', 'array-contains', myId))
-
-    const unsubscribe: Unsubscribe = onSnapshot(q, (snapshot) => {
-        const groupArr: Group[] = []
-        snapshot.forEach(doc => {
-            const group = new Group(doc.id, doc.data())
-            groupArr.push(group)
+        const collectionRef = collection(db, 'group')
+        const q = query(collectionRef, where('member', 'array-contains', id))
+    
+        const unsubscribe: Unsubscribe = onSnapshot(q, (snapshot) => {
+            const groupArr: Group[] = []
+            snapshot.forEach(doc => {
+                const group = new Group(doc.id, doc.data())
+                groupArr.push(group)
+            })
+            onUpdate(groupArr)
         })
-        onUpdate(groupArr)
         return unsubscribe
     })
 }
