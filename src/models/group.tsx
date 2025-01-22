@@ -14,7 +14,7 @@ export default class Group implements IGroup{
     constructor(id:string, data:any){
         this.Id = id
         this.Name = data.name
-        this.CreatedAt = data.CreatedAt.toDate()
+        this.CreatedAt = new Date(data.CreatedAt)
         this.Member = data.member
     }
 }

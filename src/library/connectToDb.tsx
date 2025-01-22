@@ -53,13 +53,18 @@ export function getGroupsByUid(uid:string, onUpdate: (groups: Group[]) => void) 
     getId().then((id) => {
         myId = id
     })
+
+    if(myId === ''){
+        console.log('同期できてないーよ😎')
+        myId = 'm653fg8s6067l5zh'
+    }
     const collectionRef = collection(db, 'group')
     const q = query(collectionRef, where('member', 'array-contains', myId))
 
     const unsubscribe: Unsubscribe = onSnapshot(q, (snapshot) => {
         const groupArr: Group[] = []
         snapshot.forEach(doc => {
-            const group = new Group(doc.id, doc.data)
+            const group = new Group(doc.id, doc.data())
             groupArr.push(group)
         })
         onUpdate(groupArr)
@@ -77,7 +82,7 @@ export function getChatsByGroupId(groupId:string|undefined, onUpdate: (chats: Ch
     const unsubscribe = onSnapshot(q, (snapshot) => {
         const chatsArr: Chat[] = []
         snapshot.forEach(doc => {
-            const chat = new Chat(doc.id, doc.data)
+            const chat = new Chat(doc.id, doc.data())
             chatsArr.push(chat)
         })
         onUpdate(chatsArr)

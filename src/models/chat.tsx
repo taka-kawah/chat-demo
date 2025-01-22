@@ -15,7 +15,7 @@ export default class Chat implements IChat{
 
     constructor(id:string, data:any){
         this.Id = id
-        this.CreatedAt = data.CreatedAt.toDate()
+        this.CreatedAt = new Date(data.CreatedAt)
         this.Message = data.Message
         this.GroupId = data.GroupId
         this.PostedBy = data.PostedBy

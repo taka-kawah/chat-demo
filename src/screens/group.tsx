@@ -15,8 +15,7 @@ const Grouptab = ({group}: {group: Group}) => {
     const navigate = useNavigate()
     const redirectToChat = () => {
         //groupIdをパラメータとしたチャット画面にリダイレクト
-        // eslint-disable-next-line no-template-curly-in-string
-        navigate('/chat/${group.id}')
+        navigate('/chat/' + group.Id)
     }
 
     return(
