@@ -11,11 +11,6 @@ import { LoginScreen } from './screens/login'
 function App() {
   return(
     <div>
-      {/* <BrowserRouter>
-        <Routes>
-          <Route path = '/' element = {<LoginScreen />} />
-        </Routes>
-      </BrowserRouter> */}
       <AuthProvider>
         <BrowserRouter>
           <Routes>
